@@ -20,14 +20,12 @@
 import { mapState, mapActions } from 'vuex';
 import Navbar from '@/components/template/Navbar';
 import Footer from '@/components/template/Footer';
-import MainPanel from '@/features/setting/views/MainPanel';
 
 export default {
   name: 'App',
   components: {
     Navbar,
     AppFooter: Footer,
-    SettingsPanel: MainPanel,
   },
   computed: {
     ...mapState('auth', {
