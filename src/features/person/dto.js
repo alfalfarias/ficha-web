@@ -1,0 +1,1 @@
+export { PersonCardDto, fromModel, toModel } from './dto/person-card.dto';
