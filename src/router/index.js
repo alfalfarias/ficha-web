@@ -15,7 +15,7 @@ const routes = [
     async beforeEnter(to, from, next) {
       const isSession = !!authService.token;
       if (isSession){
-        next({name: 'PersonList'});
+        next({name: 'DealList'});
       }
       else {
         next();
@@ -36,6 +36,14 @@ const routes = [
     component: () => import('../views/PersonDetail.vue'),
     meta: {
         title: 'Comin | Detalles de persona'
+    },
+  },
+  {
+    path: '/deal/list',
+    name: 'DealList',
+    component: () => import('../views/DealList.vue'),
+    meta: {
+        title: 'Comin | Negocios'
     },
   },
   // {

@@ -106,7 +106,7 @@ export default {
           token: token,
         });
         this.isLoading.loginRequest = false;
-        this.$router.push({ name: 'PersonList' });
+        this.$router.push({ name: 'DealList' });
       } catch (error) {
         this.isLoading.loginRequest = false;
         this.isLoading.snackbar = true;

@@ -45,9 +45,9 @@ export default {
   methods: {
     ...mapActions('auth', ['logout', 'authenticate']),
     openPersonView() {
-      console.log('openPersonView');
+      console.log('openDealView');
       if (this.username) {
-        this.$router.push({ name: 'PersonList' }).catch(() => {});
+        this.$router.push({ name: 'DealList' }).catch(() => {});
       }
     },
     async closeSession() {
