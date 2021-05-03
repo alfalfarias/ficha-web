@@ -5,9 +5,9 @@
         mdi-label
       </v-icon>
       Nº-{{id}}
-<!--       <v-row justify="end">
-        <span class="subtitle-1 grey--text ma-4">Hace 4 minutos.</span>
-      </v-row> -->
+      <v-row justify="end">
+        <span class="subtitle-1 grey--text ma-4">{{ createdAt | humantime }}</span>
+      </v-row>
     </v-card-title>
 
     <v-card-text class="ma-1">
@@ -86,13 +86,15 @@
         </v-btn>
       </v-badge>
     </v-card-text>
-
-    <v-card-actions>
-    </v-card-actions>
   </v-card>
 </template>
 
 <script>
+
+  import currency from '@/filters/currency';
+  import { humantime } from '@/filters/datetime';
+  import { DealCardDto } from '../dto/deal-card.dto';
+
   export default {
     name: 'DealCard',
     props: {
@@ -108,9 +110,10 @@
         type: Number,
         required: true,
       },
-      date: {
-        type: String,
+      createdAt: {
+        type: [String, Date],
         required: false,
+        default: 'jeje',
       },
       fullname: {
         type: String,
@@ -139,6 +142,10 @@
         emailShow: 3,
         phoneShow: 3,
       };
+    },
+    filters: {
+      currency,
+      humantime,
     },
     methods: {
       showMoreEmails(quantity) {

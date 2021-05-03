@@ -8,7 +8,7 @@
     </v-card-title>
     <v-card-text>
       <v-row>
-        <v-col cols="3">
+        <v-col cols="12" md="3">
           <v-card>
             <v-card-title>
               <a href="#" class="text-decoration-none text-right text-md-left" >
@@ -21,7 +21,7 @@
               <v-row>
                 <v-col cols="12">
                   <v-text-field
-                  v-model="search.rut"
+                  v-model="fieldSearch.rut"
                   label="Registro Único Tributario (RUT)"
                   prepend-inner-icon="mdi-email"
                   outlined
@@ -29,11 +29,13 @@
                   dense
                   clearable
                   hide-details
+                  @keyup="search"
+                  @click:clear="search"
                   />
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
-                  v-model="search.email"
+                  v-model="fieldSearch.email"
                   label="Correo electrónico"
                   prepend-inner-icon="mdi-email"
                   outlined
@@ -41,11 +43,13 @@
                   dense
                   clearable
                   hide-details
+                  @keyup="search"
+                  @click:clear="search"
                   />
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
-                  v-model="search.phone"
+                  v-model="fieldSearch.phone"
                   label="Número telefónico"
                   prepend-inner-icon="mdi-phone"
                   outlined
@@ -53,21 +57,26 @@
                   dense
                   clearable
                   hide-details
+                  @keyup="search"
+                  @click:clear="search"
                   />
                 </v-col>
               </v-row>
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="9">
-          <v-row v-if="isLoading.fetchPaginateRequest" justify="center">
-            <v-progress-circular
-            :size="60"
-            :width="5"
-            color="purple"
-            indeterminate
-            />
-          </v-row>
+        <v-col cols="12" md="9">
+          <v-card v-if="isLoading.fetchPaginateRequest" color="primary" dark height="100%" minHeight="200px">
+            <v-container fill-height fluid>
+              <v-row align="center" justify="center">
+                    <v-progress-circular
+                    :size="60"
+                    :width="5"
+                    indeterminate
+                    />
+              </v-row>
+            </v-container>
+          </v-card>
 
           <v-alert 
           prominent 
@@ -91,7 +100,7 @@
               :id="item.id"
               :status="item.status"
               :amount="item.amount"
-              :date="item.date"
+              :createdAt="item.createdAt"
               :fullname="item.person.fullname"
               :dni="item.person.dni"
               :emails="item.emails"
@@ -99,18 +108,19 @@
               />
             </v-col>
           </v-row>
-
-          <br/>
-
-          <v-pagination
-          color="primary"
-          v-model="pagination.page"
-          :length="pagination.total"
-          :total-visible="pagination.perPage"
-          @input="changePage"
-          />
         </v-col>
       </v-row>
+
+      <br/>
+
+      <v-pagination
+      v-if="!isLoading.fetchPaginateRequest"
+      color="primary"
+      v-model="pagination.page"
+      :length="pagination.total"
+      :total-visible="pagination.perPage"
+      @input="changePage"
+      />
     </v-card-text>
   </v-card>
 </template>
@@ -129,11 +139,15 @@
     },
     data() {
       return {
-        dealService: dump,
+        dealService: dealService,
         isLoading: {
           fetchPaginateRequest: false,
         },
-        search: {
+        requestSearch: {
+          timeout: 1000,
+          callback: null,
+        },
+        fieldSearch: {
           rut: null,
           email: null,
           phone: null,
@@ -148,15 +162,23 @@
     },
     filters: { },
     methods: { 
-      clearInput(input) {
-        input = '';
+      search() {
+        if (this.requestSearch.callback) {
+          clearTimeout(this.requestSearch.callback);
+          this.requestSearch.callback = null;
+        }
+        this.requestSearch.callback = setTimeout(() => {
+          this.fetchPaginate();
+        }, this.requestSearch.timeout);
       },
-      changePage(page) {
-        this.fetchPaginate({page: page});
+      async changePage(page) {
+        this.page = page;
+        await this.fetchPaginate();
       },
-      async fetchPaginate({page = 1, perPage = 12} = {}) {
-        const search = this.search;
-        const queryParams = {}; 
+      async fetchPaginate() {
+        const search = this.fieldSearch;
+
+        const queryParams = { }; 
         for (const key in search) {
           const value = search[key];
           if (value) {
@@ -167,15 +189,22 @@
         try {
           this.isLoading.fetchPaginateRequest = true;
 
-          const response = paginateResponse;
-          // const response = await dump.fetchPaginate({timeout: 1000});
-          this.pagination.data = [...response.data.map(item => fromModel(item))];
+          console.log('antes');
+          const response = await this.dealService.fetchPaginate({
+            page: this.pagination.page,
+            perPage: this.pagination.perPage,
+            sort: '-id_negocio',
+            queryParams: queryParams,
+          });
+          console.log('despues');
+          this.pagination.data = [...response.data.map(item => new fromModel(item))];
           this.pagination.perPage = response.perPage;
           this.pagination.total = response.total;
           // this.pagination.data = response.data;
 
           this.isLoading.fetchPaginateRequest = false;
         } catch (error) {
+          console.log('error', error);
           this.isLoading.fetchPaginateRequest = false;
           throw error;
         }

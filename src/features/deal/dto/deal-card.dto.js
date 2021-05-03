@@ -9,6 +9,8 @@ export const DealCardDto = function(data) {
     dni: data.dni && String(data.dni),
     amount: data.amount && Number(data.amount),
     status: data.status && String(data.status),
+    createdAt: data.createdAt && String(data.createdAt),
+    updatedAt: data.updatedAt && String(data.updatedAt),
 
     person: data.person && PersonDto(data.person),
     emails: data.emails && data.emails.map(item => EmailDto(item)),
@@ -27,6 +29,9 @@ export const fromModel = function(model) {
     amount: dealModel.monto && Number(dealModel.monto),
     status: dealModel.estado && String(dealModel.estado),
 
+    createdAt: dealModel.fcreado && String(dealModel.fcreado),
+    updatedAt: dealModel.factualizacion && String(dealModel.factualizacion),
+
     person: dealModel.person && personFromModel(dealModel.person),
     emails: dealModel.emails && dealModel.emails.map(item => emailFromModel(item)),
     phones: dealModel.phones && dealModel.phones.map(item => phoneFromModel(item)),
@@ -44,7 +49,10 @@ export const toModel = function(dto) {
     id_negocio: dealCardDto.id && Number(dealCardDto.id),
     rut: dealCardDto.dni && Number(dealCardDto.dni),
     monto: dealCardDto.amount && Number(dealCardDto.amount),
-    estado: dealCardDto.status && Number(dealCardDto.status),
+    estado: dealCardDto.status && String(dealCardDto.status),
+
+    fcreado: dealCardDto.createdAt && String(dealCardDto.createdAt),
+    factualizacion: dealCardDto.updatedAt && String(dealCardDto.updatedAt),
 
     person: dealCardDto.person && personToModel(dealCardDto.person),
     emails: dealCardDto.emails && dealCardDto.emails.map(item => emailToModel(item)),

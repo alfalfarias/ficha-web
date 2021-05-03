@@ -1,1 +1,0 @@
-export { RutModel, verificacion, VERIFICACION } from './models/rut.model';

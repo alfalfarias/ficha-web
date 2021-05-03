@@ -7,12 +7,12 @@ const endpoint = `${api.url}/api/deal/deals`;
 
 export const service = {
 	async fetchPaginate({page=1, perPage=10, sort='-id', queryParams = {}}) {
-    const params = { };
-    for (const key in queryParams) {
-      params[key] = queryParams[key];
-      // params[key] = encodeURI(queryParams[key]);
+    const params = {
+      page: page,
+      per_page: perPage,
+      sort: sort,
+      ...queryParams,
     }
-
     const http = await axios.get(`${endpoint}`, { params: params });
     const response = http.data;
     const data = {
