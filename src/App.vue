@@ -2,6 +2,7 @@
   <v-app>
     <Navbar
       :username="username"
+      :isLoading="isLoading.fetchUserRequest"
       @homeBtn="openPersonView"
       @closeSessionBtn="closeSession"
     />
@@ -34,8 +35,8 @@ export default {
   },
   data() {
     return {
-      dialog: {
-        settings: false,
+      isLoading: {
+        fetchUserRequest: false,
       },
       data: {
         username: null,
@@ -45,19 +46,28 @@ export default {
   methods: {
     ...mapActions('auth', ['logout', 'authenticate']),
     openPersonView() {
-      console.log('openDealView');
       if (this.username) {
         this.$router.push({ name: 'DealList' }).catch(() => {});
       }
     },
     async closeSession() {
-      console.log('closeSession');
       await this.logout();
       this.$router.push({ name: 'Login' }).catch(() => {});
     },
+    async fetchUser() {
+      try {
+        this.isLoading.fetchUserRequest = true;
+        const user = await this.authenticate().catch(() => {});
+      } catch (error) {
+        console.log(error);
+        throw error;
+      } finally {
+        this.isLoading.fetchUserRequest = false;
+      }
+    },
   },
-  async created() {
-    // await this.authenticate().catch(() => {});
+  async created() { 
+    this.fetchUser();
   },
 };
 </script>

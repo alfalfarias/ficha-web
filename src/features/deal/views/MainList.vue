@@ -8,7 +8,7 @@
     </v-card-title>
     <v-card-text>
       <v-row>
-        <v-col cols="12" md="3">
+        <v-col cols="12" md="4">
           <v-card>
             <v-card-title>
               <a href="#" class="text-decoration-none text-right text-md-left" >
@@ -23,7 +23,7 @@
                   <v-text-field
                   v-model="fieldSearch.rut"
                   label="Registro Único Tributario (RUT)"
-                  prepend-inner-icon="mdi-email"
+                  prepend-inner-icon="mdi-card-account-details-outline"
                   outlined
                   filled
                   dense
@@ -47,10 +47,24 @@
                   @click:clear="search"
                   />
                 </v-col>
-                <v-col cols="12">
+                <v-col cols="5">
+                  <v-text-field
+                  v-model="fieldSearch.area"
+                  label="Area"
+                  prepend-inner-icon="mdi-code-braces"
+                  outlined
+                  filled
+                  dense
+                  clearable
+                  hide-details
+                  @keyup="search"
+                  @click:clear="search"
+                  />
+                </v-col>
+                <v-col cols="7">
                   <v-text-field
                   v-model="fieldSearch.phone"
-                  label="Número telefónico"
+                  label="Teléfono"
                   prepend-inner-icon="mdi-phone"
                   outlined
                   filled
@@ -65,7 +79,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="12" md="9">
+        <v-col cols="12" md="8">
           <v-card v-if="isLoading.fetchPaginateRequest" color="primary" dark height="100%" minHeight="200px">
             <v-container fill-height fluid>
               <v-row align="center" justify="center">
@@ -150,6 +164,7 @@
         fieldSearch: {
           rut: null,
           email: null,
+          area: null,
           phone: null,
         },
         pagination: {
@@ -168,6 +183,7 @@
           this.requestSearch.callback = null;
         }
         this.requestSearch.callback = setTimeout(() => {
+          this.pagination.page = 1;
           this.fetchPaginate();
         }, this.requestSearch.timeout);
       },
@@ -182,25 +198,23 @@
         for (const key in search) {
           const value = search[key];
           if (value) {
-            queryParams[key] = `${value}%`;
+            queryParams[key] = `${value}`;
           }
         }
 
         try {
           this.isLoading.fetchPaginateRequest = true;
 
-          console.log('antes');
           const response = await this.dealService.fetchPaginate({
             page: this.pagination.page,
             perPage: this.pagination.perPage,
             sort: '-id_negocio',
             queryParams: queryParams,
           });
-          console.log('despues');
+
           this.pagination.data = [...response.data.map(item => new fromModel(item))];
           this.pagination.perPage = response.perPage;
           this.pagination.total = response.total;
-          // this.pagination.data = response.data;
 
           this.isLoading.fetchPaginateRequest = false;
         } catch (error) {
@@ -208,17 +222,6 @@
           this.isLoading.fetchPaginateRequest = false;
           throw error;
         }
-
-        
-
-
-        // const pagination = await this.dealService.fetchPaginate({
-        //   page: page, 
-        //   perPage: perPage, 
-        //   sort: '-id', 
-        //   queryParams: queryParams,
-        // });
-        // console.log('pagination', pagination);
       },
       async refresh() {
         this.fetchPaginate();

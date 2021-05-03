@@ -22,7 +22,12 @@
           RUT • {{dni}}
         </div>
         <div>
-          Monto • ${{amount}}
+          <template v-if="amount">
+            Monto • ${{amount}}
+          </template>
+          <template v-else>
+            Monto • <strong>SIN MONTO</strong>
+          </template>
         </div>
         <div>
           Estado • {{status}}
@@ -108,7 +113,7 @@
       },
       amount: {
         type: Number,
-        required: true,
+        required: false,
       },
       createdAt: {
         type: [String, Date],

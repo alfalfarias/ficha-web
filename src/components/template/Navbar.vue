@@ -1,5 +1,6 @@
 <template>
-  <v-app-bar app color="primary" dark>
+  <div>
+  <v-app-bar color="primary" dark>
     <v-img
       alt="Vuetify Logo"
       class="shrink mr-2 logo"
@@ -34,6 +35,14 @@
       </v-menu>
     </template>
   </v-app-bar>
+  <template v-if="isLoading">
+    <v-progress-linear
+      indeterminate
+      absolute
+      color="light-blue darken-4"
+    ></v-progress-linear>
+  </template>
+  </div>
 </template>
 
 <script>
@@ -43,6 +52,11 @@ export default {
     username: {
       type: String,
       required: false,
+    },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   methods: {
